@@ -21,6 +21,8 @@ _MIME_TYPES = {
 
 
 async def render_plotly(model: PlotModel, request: PlotRequest) -> PlotResult:
+    """Render a plot model with Plotly into the requested output format."""
+
     figure = _build_figure(model, request)
     output_format = request.output_format
 

@@ -37,6 +37,8 @@ async def fetch_history(
     query: HistoryQuery,
     available_metrics: Sequence[MetricInfo] | None = None,
 ) -> tuple[HistoryQuery, MetricInfo | None, SeriesSet]:
+    """Load, normalize and validate historical data from a provider."""
+
     metrics = (
         list(available_metrics)
         if available_metrics is not None
@@ -61,21 +63,10 @@ async def summarize_history(
     provider: TimeSeriesProvider,
     query: HistoryQuery,
 ) -> SummarySet:
+    """Fetch history and return computed summary statistics."""
+
     normalized_query, _, series_set = await fetch_history(provider, query)
-    processed = series_set
-    if (
-        normalized_query.aggregation != "raw"
-        or normalized_query.requested_interval_s is not None
-    ):
-        interval_s = normalized_query.requested_interval_s or auto_interval_seconds(
-            normalized_query.start,
-            normalized_query.end,
-        )
-        processed = resample(
-            series_set,
-            interval_s=interval_s,
-            aggregation=normalized_query.aggregation,
-        )
+    processed = _resample_if_requested(normalized_query, series_set)
     return summarize(processed)
 
 
@@ -83,6 +74,8 @@ async def plot_history(
     provider: TimeSeriesProvider,
     request: PlotRequest,
 ) -> PlotResult:
+    """Fetch history, post-process it and render a plot payload."""
+
     available_metrics = list(await provider.list_metrics(request.selector))
     normalized_request = normalize_plot_request(request, metrics=available_metrics)
     history_query = HistoryQuery(
@@ -100,17 +93,11 @@ async def plot_history(
         available_metrics=available_metrics,
     )
 
-    processed = series_set
-    if (
-        normalized_request.aggregation != "raw"
-        or history_query.requested_interval_s is not None
-    ):
-        processed = resample(
-            processed,
-            interval_s=history_query.requested_interval_s,
-            aggregation=normalized_request.aggregation,
-            target_points=normalized_request.max_points_per_series,
-        )
+    processed = _resample_if_requested(
+        history_query,
+        series_set,
+        target_points=normalized_request.max_points_per_series,
+    )
     processed = downsample(
         processed, max_points_per_series=normalized_request.max_points_per_series
     )
@@ -125,6 +112,28 @@ def _requested_interval_for_plot(request: PlotRequest) -> int | None:
         return None
     return auto_interval_seconds(
         request.start, request.end, target_points=request.max_points_per_series
+    )
+
+
+def _resample_if_requested(
+    query: HistoryQuery,
+    series_set: SeriesSet,
+    target_points: int = 1200,
+) -> SeriesSet:
+    """Resample a series set only when the query explicitly requests it."""
+
+    if query.aggregation == "raw" and query.requested_interval_s is None:
+        return series_set
+
+    interval_s = query.requested_interval_s or auto_interval_seconds(
+        query.start,
+        query.end,
+    )
+    return resample(
+        series_set,
+        interval_s=interval_s,
+        aggregation=query.aggregation,
+        target_points=target_points,
     )
 
 

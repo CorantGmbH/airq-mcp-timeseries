@@ -3,10 +3,12 @@
 from dataclasses import replace
 from math import ceil
 
-from airq_mcp_timeseries.models import SeriesSet, TimeSeries
+from airq_mcp_timeseries.models import SeriesPoint, SeriesSet, TimeSeries
 
 
 def downsample(series_set: SeriesSet, max_points_per_series: int) -> SeriesSet:
+    """Reduce each series while preserving endpoints and local extrema."""
+
     if max_points_per_series <= 0:
         raise ValueError("max_points_per_series must be greater than zero")
     reduced = [
@@ -21,7 +23,11 @@ def downsample(series_set: SeriesSet, max_points_per_series: int) -> SeriesSet:
     return replace(series_set, series=reduced)
 
 
-def _downsample_points(points, max_points_per_series: int):
+def _downsample_points(
+    points: list[SeriesPoint], max_points_per_series: int
+) -> list[SeriesPoint]:
+    """Reduce one list of points while keeping spikes visible."""
+
     point_count = len(points)
     if point_count <= max_points_per_series:
         return list(points)
@@ -32,20 +38,7 @@ def _downsample_points(points, max_points_per_series: int):
 
     for bucket_start in range(0, point_count, bucket_size):
         bucket_end = min(bucket_start + bucket_size, point_count)
-        bucket = points[bucket_start:bucket_end]
-        valid = [
-            (bucket_start + offset, point.value)
-            for offset, point in enumerate(bucket)
-            if point.value is not None
-        ]
-        if valid:
-            min_index = min(valid, key=lambda item: item[1])[0]
-            max_index = max(valid, key=lambda item: item[1])[0]
-            selected.add(min_index)
-            selected.add(max_index)
-        else:
-            selected.add(bucket_start)
-            selected.add(bucket_end - 1)
+        selected.update(_bucket_indices(points, bucket_start, bucket_end))
 
     ordered = sorted(selected)
     if len(ordered) > max_points_per_series:  # pragma: no cover
@@ -66,3 +59,21 @@ def _downsample_points(points, max_points_per_series: int):
         if not unique_ordered or unique_ordered[-1] != index:
             unique_ordered.append(index)
     return [points[index] for index in unique_ordered]
+
+
+def _bucket_indices(
+    points: list[SeriesPoint], bucket_start: int, bucket_end: int
+) -> set[int]:
+    """Return representative point indexes for one bucket."""
+
+    valid = [
+        (bucket_start + offset, point.value)
+        for offset, point in enumerate(points[bucket_start:bucket_end])
+        if point.value is not None
+    ]
+    if not valid:
+        return {bucket_start, bucket_end - 1}
+    return {
+        min(valid, key=lambda item: item[1])[0],
+        max(valid, key=lambda item: item[1])[0],
+    }

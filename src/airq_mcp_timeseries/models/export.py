@@ -8,6 +8,8 @@ ExportFormat = Literal["csv", "xlsx"]
 
 @dataclass(frozen=True, slots=True)
 class ExportResult:
+    """Represent a serialized tabular export payload."""
+
     output_format: ExportFormat
     mime_type: str
     payload: bytes | str

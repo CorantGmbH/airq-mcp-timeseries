@@ -29,6 +29,8 @@ DARK_COLORWAY = (
 
 @dataclass(frozen=True, slots=True)
 class ThemeDefinition:
+    """Define the colors and Plotly template for one visual theme."""
+
     template: str
     plot_bgcolor: str
     paper_bgcolor: str
@@ -70,7 +72,11 @@ THEMES: dict[ThemeName, ThemeDefinition] = {
 
 
 @dataclass(frozen=True, slots=True)
+# The public plotting API intentionally exposes these knobs directly.
+# pylint: disable=too-many-instance-attributes
 class PlotStyle:
+    """Collect visual configuration options for plot rendering."""
+
     theme: ThemeName = "airq"
     width: int = 1200
     height: int = 550
@@ -90,4 +96,6 @@ class PlotStyle:
 
 
 def get_theme_definition(theme: ThemeName) -> ThemeDefinition:
+    """Return the theme configuration for the requested theme name."""
+
     return THEMES[theme]

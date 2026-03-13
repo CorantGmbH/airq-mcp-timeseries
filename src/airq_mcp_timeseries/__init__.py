@@ -1,5 +1,7 @@
 """Shared time-series domain layer for air-Q MCP providers."""
 
+# pylint: disable=duplicate-code
+
 from airq_mcp_timeseries.errors import (
     CapabilityNotAvailableError,
     EmptySeriesError,
@@ -39,7 +41,7 @@ from airq_mcp_timeseries.services.plot_model import build_plot_model
 from airq_mcp_timeseries.services.resample import auto_interval_seconds, resample
 from airq_mcp_timeseries.services.summarize import summarize
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 __all__ = [
     "AIRQ_COLORWAY",

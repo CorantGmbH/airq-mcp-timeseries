@@ -6,6 +6,8 @@ from airq_mcp_timeseries.models import SeriesSet, SeriesSummary, SummarySet
 
 
 def summarize(series_set: SeriesSet) -> SummarySet:
+    """Compute per-series summary statistics for a series set."""
+
     summaries = []
     for series in series_set.series:
         values = [point.value for point in series.points if point.value is not None]

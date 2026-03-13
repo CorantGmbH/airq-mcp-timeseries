@@ -1,5 +1,7 @@
 """Domain models for airq_mcp_timeseries."""
 
+# pylint: disable=duplicate-code
+
 from airq_mcp_timeseries.models.capabilities import CapabilitySet
 from airq_mcp_timeseries.models.export import ExportFormat, ExportResult
 from airq_mcp_timeseries.models.metrics import MetricInfo

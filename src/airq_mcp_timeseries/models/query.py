@@ -11,6 +11,8 @@ OutputFormat = Literal["html", "png", "svg", "webp"]
 
 @dataclass(frozen=True, slots=True)
 class Selector:
+    """Select one or more devices or logical groupings as a data source."""
+
     devices: list[str] | None = None
     location: str | None = None
     group: str | None = None
@@ -18,6 +20,8 @@ class Selector:
 
 @dataclass(frozen=True, slots=True)
 class HistoryQuery:
+    """Describe a normalized or user-provided historical data request."""
+
     selector: Selector
     metric: str
     start: datetime

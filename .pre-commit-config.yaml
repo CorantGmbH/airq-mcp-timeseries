@@ -17,7 +17,7 @@ repos:
         entry: pylint
         language: system
         pass_filenames: true
-        args: ["--jobs=4", "--disable=C0114,C0115,C0116,R0902,R0914,W2301"]
+        args: ["--jobs=4"]
       - id: pytest
         name: pytest
         stages: [pre-commit]

@@ -1,5 +1,7 @@
 """Service layer exports."""
 
+# pylint: disable=duplicate-code
+
 from airq_mcp_timeseries.services.downsample import downsample
 from airq_mcp_timeseries.services.export import export_history, export_series_set
 from airq_mcp_timeseries.services.history import (

@@ -19,6 +19,8 @@ def build_plot_model(
     request: PlotRequest,
     metric_info: MetricInfo | None = None,
 ) -> PlotModel:
+    """Convert a processed series set into a renderer-neutral plot model."""
+
     if not series_set.series:
         raise EmptySeriesError("cannot build a plot model from an empty series set")
 

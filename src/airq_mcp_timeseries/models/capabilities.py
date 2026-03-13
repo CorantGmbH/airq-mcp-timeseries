@@ -5,6 +5,8 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True, slots=True)
 class CapabilitySet:
+    """Describe which features a provider instance supports."""
+
     latest_values: bool = True
     historical_values: bool = False
     configuration: bool = False

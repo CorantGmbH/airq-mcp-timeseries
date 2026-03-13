@@ -10,8 +10,7 @@ from openpyxl import Workbook
 from airq_mcp_timeseries.errors import UnsupportedOutputFormatError
 from airq_mcp_timeseries.models import ExportResult, HistoryQuery, MetricInfo, SeriesSet
 from airq_mcp_timeseries.providers.base import TimeSeriesProvider
-from airq_mcp_timeseries.services.history import fetch_history
-from airq_mcp_timeseries.services.resample import auto_interval_seconds, resample
+from airq_mcp_timeseries.services.history import _resample_if_requested, fetch_history
 
 _EXPORT_MIME_TYPES = {
     "csv": "text/csv; charset=utf-8",
@@ -33,21 +32,10 @@ async def export_history(
     query: HistoryQuery,
     output_format: str = "csv",
 ) -> ExportResult:
+    """Fetch history and serialize it as CSV or Excel."""
+
     normalized_query, metric_info, series_set = await fetch_history(provider, query)
-    processed = series_set
-    if (
-        normalized_query.aggregation != "raw"
-        or normalized_query.requested_interval_s is not None
-    ):
-        interval_s = normalized_query.requested_interval_s or auto_interval_seconds(
-            normalized_query.start,
-            normalized_query.end,
-        )
-        processed = resample(
-            series_set,
-            interval_s=interval_s,
-            aggregation=normalized_query.aggregation,
-        )
+    processed = _resample_if_requested(normalized_query, series_set)
     return export_series_set(
         processed, output_format=output_format, metric_info=metric_info
     )
@@ -58,6 +46,8 @@ def export_series_set(
     output_format: str,
     metric_info: MetricInfo | None = None,
 ) -> ExportResult:
+    """Serialize a preloaded series set as CSV or Excel."""
+
     if output_format == "csv":
         payload = _write_csv(series_set, metric_info=metric_info)
     elif output_format == "xlsx":

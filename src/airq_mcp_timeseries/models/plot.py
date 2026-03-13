@@ -14,7 +14,11 @@ from airq_mcp_timeseries.models.summary import SummarySet
 
 
 @dataclass(frozen=True, slots=True)
+# The request object mirrors the public API and keeps fields flat on purpose.
+# pylint: disable=too-many-instance-attributes
 class PlotRequest:
+    """Describe a complete plotting request for one metric."""
+
     selector: Selector
     metric: str
     start: datetime
@@ -29,6 +33,8 @@ class PlotRequest:
 
 @dataclass(frozen=True, slots=True)
 class PlotModelSeries:
+    """Store renderer-ready x/y arrays for one plotted series."""
+
     id: str
     label: str
     unit: str | None
@@ -38,6 +44,8 @@ class PlotModelSeries:
 
 @dataclass(frozen=True, slots=True)
 class PlotModel:
+    """Store the renderer-independent chart representation."""
+
     metric: str
     title: str
     y_axis_title: str | None
@@ -46,6 +54,8 @@ class PlotModel:
 
 @dataclass(frozen=True, slots=True)
 class PlotResult:
+    """Return a rendered plot payload and optional computed summary."""
+
     output_format: OutputFormat
     mime_type: str
     payload: bytes | str

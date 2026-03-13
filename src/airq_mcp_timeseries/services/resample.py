@@ -33,6 +33,8 @@ _FRIENDLY_INTERVALS = (
 def auto_interval_seconds(
     start: datetime, end: datetime, target_points: int = 1200
 ) -> int:
+    """Choose a human-friendly resampling interval for a time range."""
+
     duration_s = max((end - start).total_seconds(), 1.0)
     safe_target = min(max(target_points, 100), 4000)
     raw_interval = max(duration_s / safe_target, 1.0)
@@ -48,6 +50,8 @@ def resample(
     aggregation: Aggregation = "raw",
     target_points: int = 1200,
 ) -> SeriesSet:
+    """Resample each series into evenly sized time buckets."""
+
     if aggregation == "raw" and interval_s is None:
         return series_set
     start = _parse_iso_datetime(series_set.start)
@@ -107,6 +111,8 @@ def _resample_points(
 
 
 def _aggregator(aggregation: Aggregation) -> Callable[[list[float]], float]:
+    """Return the aggregation function for one aggregation mode."""
+
     if aggregation == "mean":
         return mean
     if aggregation == "min":
@@ -119,6 +125,8 @@ def _aggregator(aggregation: Aggregation) -> Callable[[list[float]], float]:
 
 
 def _parse_iso_datetime(value: str) -> datetime:
+    """Parse provider timestamps, including trailing ``Z`` timestamps."""
+
     if value.endswith("Z"):
         value = value[:-1] + "+00:00"
     return datetime.fromisoformat(value)

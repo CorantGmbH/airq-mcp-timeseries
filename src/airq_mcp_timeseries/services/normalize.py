@@ -28,6 +28,8 @@ def canonicalize_metric_name(metric: str) -> str:
 def select_metric_info(
     metric: str, metrics: Sequence[MetricInfo] | None = None
 ) -> MetricInfo | None:
+    """Resolve one metric name or alias to its metadata record."""
+
     if not metrics:
         return None
     alias_map = _metric_alias_map(metrics)
@@ -52,6 +54,8 @@ def normalize_history_query(
     metrics: Sequence[MetricInfo] | None = None,
     default_timezone: str = "UTC",
 ) -> HistoryQuery:
+    """Normalize a history query and ensure its time range is valid."""
+
     timezone_name = _resolve_timezone_name(query.timezone, default_timezone)
     zone = _get_timezone(timezone_name)
     start = _coerce_datetime(query.start, zone)
@@ -73,6 +77,8 @@ def normalize_plot_request(
     metrics: Sequence[MetricInfo] | None = None,
     default_timezone: str = "UTC",
 ) -> PlotRequest:
+    """Normalize a plot request and ensure its time range is valid."""
+
     timezone_name = _resolve_timezone_name(request.timezone, default_timezone)
     zone = _get_timezone(timezone_name)
     start = _coerce_datetime(request.start, zone)
@@ -90,6 +96,8 @@ def normalize_plot_request(
 
 
 def humanize_metric_name(metric: str) -> str:
+    """Generate a readable fallback label for a metric key."""
+
     raw = metric.replace("_", " ").strip()
     if raw.lower().startswith("pm") and any(ch.isdigit() for ch in raw):
         return raw.upper().replace(" ", "")
@@ -97,6 +105,8 @@ def humanize_metric_name(metric: str) -> str:
 
 
 def default_plot_title(metric: str, metric_info: MetricInfo | None = None) -> str:
+    """Build the default plot title from metric metadata or key."""
+
     return (
         metric_info.label if metric_info is not None else humanize_metric_name(metric)
     )
@@ -105,6 +115,8 @@ def default_plot_title(metric: str, metric_info: MetricInfo | None = None) -> st
 def default_y_axis_title(
     metric_info: MetricInfo | None, fallback_unit: str | None = None
 ) -> str | None:
+    """Choose the y-axis title from metric metadata or fallback unit."""
+
     if metric_info is not None and metric_info.unit:
         return metric_info.unit
     return fallback_unit
@@ -119,12 +131,16 @@ def _metric_alias_map(metrics: Sequence[MetricInfo]) -> dict[str, str]:
 
 
 def _resolve_timezone_name(explicit_timezone: str | None, default_timezone: str) -> str:
+    """Choose the effective timezone name for normalization."""
+
     if explicit_timezone:
         return explicit_timezone
     return default_timezone
 
 
 def _get_timezone(timezone_name: str) -> ZoneInfo:
+    """Load a timezone or raise a package-specific validation error."""
+
     try:
         return ZoneInfo(timezone_name)
     except ZoneInfoNotFoundError as exc:
@@ -132,12 +148,16 @@ def _get_timezone(timezone_name: str) -> ZoneInfo:
 
 
 def _coerce_datetime(value: datetime, zone: ZoneInfo) -> datetime:
+    """Attach or convert a datetime into the target timezone."""
+
     if value.tzinfo is None:
         return value.replace(tzinfo=zone)
     return value.astimezone(zone)
 
 
 def _validate_time_range(start: datetime, end: datetime) -> None:
+    """Ensure a normalized time range is timezone-aware and ordered."""
+
     if start.tzinfo is None or end.tzinfo is None:
         raise InvalidTimeRangeError(
             "start and end must be timezone-aware after normalization"
@@ -147,4 +167,6 @@ def _validate_time_range(start: datetime, end: datetime) -> None:
 
 
 def utc_now() -> datetime:
+    """Return the current UTC timestamp."""
+
     return datetime.now(UTC)
