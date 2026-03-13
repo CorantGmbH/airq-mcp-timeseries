@@ -20,11 +20,7 @@ def summarize(series_set: SeriesSet) -> SummarySet:
                 min_value=min(values) if values else None,
                 max_value=max(values) if values else None,
                 mean_value=mean(values) if values else None,
-                missing_fraction=(
-                    None
-                    if total_count == 0
-                    else (total_count - valid_count) / total_count
-                ),
+                missing_fraction=(None if total_count == 0 else (total_count - valid_count) / total_count),
             )
         )
     return SummarySet(metric=series_set.metric, summaries=summaries)

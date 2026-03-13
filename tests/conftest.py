@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+import sys
 from dataclasses import replace
 from datetime import datetime, timedelta
 from pathlib import Path
-import sys
 from typing import Sequence
 
 import pytest
@@ -35,9 +35,7 @@ class FakeProvider:
     async def get_capabilities(self) -> CapabilitySet:
         return self._capabilities
 
-    async def list_metrics(
-        self, selector: Selector | None = None
-    ) -> Sequence[MetricInfo]:
+    async def list_metrics(self, selector: Selector | None = None) -> Sequence[MetricInfo]:
         return self._metrics
 
     async def get_history(self, query: HistoryQuery) -> SeriesSet:
@@ -68,9 +66,7 @@ def sample_series_set() -> SeriesSet:
     ]
     return SeriesSet(
         metric="pm2_5",
-        series=[
-            TimeSeries(id="wohnzimmer", label="Wohnzimmer", unit="ug/m3", points=points)
-        ],
+        series=[TimeSeries(id="wohnzimmer", label="Wohnzimmer", unit="ug/m3", points=points)],
         start=points[0].ts,
         end=points[-1].ts,
         source_resolution_s=300,
@@ -79,9 +75,7 @@ def sample_series_set() -> SeriesSet:
 
 @pytest.fixture
 def historical_capabilities() -> CapabilitySet:
-    return CapabilitySet(
-        latest_values=True, historical_values=True, max_lookback_days=90
-    )
+    return CapabilitySet(latest_values=True, historical_values=True, max_lookback_days=90)
 
 
 @pytest.fixture

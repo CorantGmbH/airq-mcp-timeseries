@@ -33,8 +33,8 @@ pip install airq-mcp-timeseries
 For development:
 
 ```bash
-pip install -e ".[dev]"
-pre-commit install
+uv sync --frozen --extra dev
+uv run pre-commit install
 ```
 
 ## Usage
@@ -72,8 +72,11 @@ export = await export_history(
 Run the full local validation stack:
 
 ```bash
-pre-commit run --all-files
-pytest --exitfirst -n auto
+uv run pre-commit run --all-files
+uv run ruff check .
+uv run ruff format --check .
+uv run pyright
+uv run pytest --exitfirst -n auto
 ```
 
 ## Release Process

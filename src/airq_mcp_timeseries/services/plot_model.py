@@ -27,9 +27,7 @@ def build_plot_model(
     common_units = {series.unit for series in series_set.series if series.unit}
     fallback_unit = next(iter(common_units), None) if len(common_units) == 1 else None
     title = request.style.title or default_plot_title(series_set.metric, metric_info)
-    y_axis_title = request.style.y_axis_title or default_y_axis_title(
-        metric_info, fallback_unit
-    )
+    y_axis_title = request.style.y_axis_title or default_y_axis_title(metric_info, fallback_unit)
 
     plot_series = [
         PlotModelSeries(

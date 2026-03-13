@@ -36,9 +36,7 @@ async def export_history(
 
     normalized_query, metric_info, series_set = await fetch_history(provider, query)
     processed = _resample_if_requested(normalized_query, series_set)
-    return export_series_set(
-        processed, output_format=output_format, metric_info=metric_info
-    )
+    return export_series_set(processed, output_format=output_format, metric_info=metric_info)
 
 
 def export_series_set(
@@ -53,9 +51,7 @@ def export_series_set(
     elif output_format == "xlsx":
         payload = _write_xlsx(series_set, metric_info=metric_info)
     else:
-        raise UnsupportedOutputFormatError(
-            f"unsupported export format: {output_format}"
-        )
+        raise UnsupportedOutputFormatError(f"unsupported export format: {output_format}")
 
     return ExportResult(
         output_format=output_format,
@@ -64,9 +60,7 @@ def export_series_set(
     )
 
 
-def _rows(
-    series_set: SeriesSet, metric_info: MetricInfo | None
-) -> list[list[str | float | None]]:
+def _rows(series_set: SeriesSet, metric_info: MetricInfo | None) -> list[list[str | float | None]]:
     metric_label = metric_info.label if metric_info is not None else series_set.metric
     rows: list[list[str | float | None]] = []
     for series in series_set.series:

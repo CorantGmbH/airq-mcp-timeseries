@@ -4,8 +4,8 @@ from datetime import UTC, datetime
 from io import BytesIO
 from typing import cast
 
-from openpyxl import load_workbook
 import pytest
+from openpyxl import load_workbook
 from openpyxl.worksheet.worksheet import Worksheet
 
 from airq_mcp_timeseries.errors import UnsupportedOutputFormatError
@@ -14,9 +14,7 @@ from airq_mcp_timeseries.services.export import export_history, export_series_se
 
 
 def test_export_series_set_writes_csv(sample_metrics, sample_series_set) -> None:
-    result = export_series_set(
-        sample_series_set, output_format="csv", metric_info=sample_metrics[0]
-    )
+    result = export_series_set(sample_series_set, output_format="csv", metric_info=sample_metrics[0])
 
     assert result == ExportResult(
         output_format="csv",
@@ -30,15 +28,10 @@ def test_export_series_set_writes_csv(sample_metrics, sample_series_set) -> None
 
 
 def test_export_series_set_writes_xlsx(sample_metrics, sample_series_set) -> None:
-    result = export_series_set(
-        sample_series_set, output_format="xlsx", metric_info=sample_metrics[0]
-    )
+    result = export_series_set(sample_series_set, output_format="xlsx", metric_info=sample_metrics[0])
 
     assert result.output_format == "xlsx"
-    assert (
-        result.mime_type
-        == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
+    assert result.mime_type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     assert isinstance(result.payload, bytes)
 
     workbook = load_workbook(filename=BytesIO(result.payload))
@@ -66,9 +59,7 @@ def test_export_series_set_writes_xlsx(sample_metrics, sample_series_set) -> Non
 
 
 @pytest.mark.asyncio
-async def test_export_history_resamples_when_requested(
-    sample_metrics, sample_series_set
-) -> None:
+async def test_export_history_resamples_when_requested(sample_metrics, sample_series_set) -> None:
     class Provider:
         async def get_capabilities(self):
             from airq_mcp_timeseries.models import CapabilitySet

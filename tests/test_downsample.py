@@ -20,9 +20,7 @@ def test_downsample_preserves_peaks_and_boundaries() -> None:
 
     series_set = SeriesSet(
         metric="pm2_5",
-        series=[
-            TimeSeries(id="wohnzimmer", label="Wohnzimmer", unit="ug/m3", points=points)
-        ],
+        series=[TimeSeries(id="wohnzimmer", label="Wohnzimmer", unit="ug/m3", points=points)],
         start=points[0].ts,
         end=points[-1].ts,
         source_resolution_s=60,

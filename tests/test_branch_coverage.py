@@ -26,6 +26,7 @@ from airq_mcp_timeseries.models import (
     SeriesSet,
     TimeSeries,
 )
+from airq_mcp_timeseries.models.style import get_theme_definition
 from airq_mcp_timeseries.renderers import plotly_renderer
 from airq_mcp_timeseries.services import history as history_service
 from airq_mcp_timeseries.services.downsample import _downsample_points, downsample
@@ -149,10 +150,7 @@ def test_resample_and_downsample_cover_remaining_branches() -> None:
     with pytest.raises(ValueError):
         downsample(series_set, 0)
 
-    none_points = [
-        SeriesPoint(ts=(start + timedelta(seconds=index)).isoformat(), value=None)
-        for index in range(6)
-    ]
+    none_points = [SeriesPoint(ts=(start + timedelta(seconds=index)).isoformat(), value=None) for index in range(6)]
     none_set = SeriesSet(
         metric="co2",
         series=[TimeSeries(id="n", label="None", unit="ppm", points=none_points)],
@@ -163,10 +161,7 @@ def test_resample_and_downsample_cover_remaining_branches() -> None:
     assert len(reduced.series[0].points) == 2
 
     many_points = [
-        SeriesPoint(
-            ts=(start + timedelta(seconds=index)).isoformat(), value=float(index)
-        )
-        for index in range(20)
+        SeriesPoint(ts=(start + timedelta(seconds=index)).isoformat(), value=float(index)) for index in range(20)
     ]
     many_set = SeriesSet(
         metric="co2",
@@ -236,7 +231,8 @@ def test_renderer_helpers_cover_layout_branches(monkeypatch) -> None:
     assert layout["paper_bgcolor"] == "rgba(0,0,0,0)"
     assert data[0]["fill"] == "tozeroy"
     assert plotly_renderer._legend_config("hidden") == {"visible": False}
-    assert plotly_renderer._range_selector(request) is not None
+    _airq_theme = get_theme_definition("airq")
+    assert plotly_renderer._range_selector(request, _airq_theme) is not None
     assert (
         plotly_renderer._range_selector(
             PlotRequest(
@@ -246,10 +242,14 @@ def test_renderer_helpers_cover_layout_branches(monkeypatch) -> None:
                 end=datetime(2026, 3, 2, tzinfo=UTC),
                 output_format="html",
                 style=PlotStyle(range_selector="auto"),
-            )
+            ),
+            _airq_theme,
         )
         is None
     )
+    # _range_selector itself does not check output_format — that is done in
+    # _build_figure which passes None for non-HTML.  A 3-day span with "auto"
+    # will return a selector dict.
     assert (
         plotly_renderer._range_selector(
             PlotRequest(
@@ -258,9 +258,10 @@ def test_renderer_helpers_cover_layout_branches(monkeypatch) -> None:
                 start=datetime(2026, 3, 1, tzinfo=UTC),
                 end=datetime(2026, 3, 4, tzinfo=UTC),
                 output_format="png",
-            )
+            ),
+            _airq_theme,
         )
-        is None
+        is not None
     )
     assert (
         plotly_renderer._range_selector(
@@ -271,13 +272,12 @@ def test_renderer_helpers_cover_layout_branches(monkeypatch) -> None:
                 end=datetime(2026, 3, 4, tzinfo=UTC),
                 output_format="html",
                 style=PlotStyle(range_selector="off"),
-            )
+            ),
+            _airq_theme,
         )
         is None
     )
-    assert plotly_renderer._hover_template(None).endswith(
-        "<extra>%{fullData.name}</extra>"
-    )
+    assert plotly_renderer._hover_template(None).endswith("<extra>%{fullData.name}</extra>")
     assert plotly_renderer._hex_to_rgba("#ffffff", 0.5) == "rgba(255, 255, 255, 0.5)"
 
     monkeypatch.setattr(
@@ -287,15 +287,11 @@ def test_renderer_helpers_cover_layout_branches(monkeypatch) -> None:
     )
     with pytest.raises(UnsupportedOutputFormatError):
         asyncio_run = __import__("asyncio").run
-        asyncio_run(
-            plotly_renderer.render_plotly(model, replace(request, output_format="png"))
-        )
+        asyncio_run(plotly_renderer.render_plotly(model, replace(request, output_format="png")))
 
 
 @pytest.mark.asyncio
-async def test_history_error_and_branch_coverage(
-    sample_metrics, sample_series_set, monkeypatch
-) -> None:
+async def test_history_error_and_branch_coverage(sample_metrics, sample_series_set, monkeypatch) -> None:
     class Provider:
         def __init__(self, capabilities, metrics, series_set):
             self.capabilities = capabilities
@@ -320,9 +316,7 @@ async def test_history_error_and_branch_coverage(
     )
     with pytest.raises(MetricNotAvailableError):
         await history_service.fetch_history(
-            Provider(
-                CapabilitySet(historical_values=True), sample_metrics, sample_series_set
-            ),
+            Provider(CapabilitySet(historical_values=True), sample_metrics, sample_series_set),
             query,
         )
 
@@ -334,9 +328,7 @@ async def test_history_error_and_branch_coverage(
     )
     with pytest.raises(MetricNotAvailableError):
         await history_service.fetch_history(
-            Provider(
-                CapabilitySet(historical_values=True), sample_metrics, metric_mismatch
-            ),
+            Provider(CapabilitySet(historical_values=True), sample_metrics, metric_mismatch),
             HistoryQuery(
                 selector=Selector(devices=["x"]),
                 metric="pm2.5",
@@ -402,9 +394,7 @@ async def test_history_error_and_branch_coverage(
 
     called = {"resample": 0, "downsample": 0}
 
-    def fake_resample(
-        series_set, interval_s=None, aggregation="raw", target_points=1200
-    ):
+    def fake_resample(series_set, interval_s=None, aggregation="raw", target_points=1200):
         called["resample"] += 1
         return series_set
 
@@ -413,18 +403,14 @@ async def test_history_error_and_branch_coverage(
         return series_set
 
     async def fake_render(model, request):
-        return PlotResult(
-            output_format=request.output_format, mime_type="image/png", payload=b"x"
-        )
+        return PlotResult(output_format=request.output_format, mime_type="image/png", payload=b"x")
 
     monkeypatch.setattr(history_service, "resample", fake_resample)
     monkeypatch.setattr(history_service, "downsample", fake_downsample)
     monkeypatch.setattr(history_service, "render_plotly", fake_render)
 
     result = await history_service.plot_history(
-        Provider(
-            CapabilitySet(historical_values=True), sample_metrics, sample_series_set
-        ),
+        Provider(CapabilitySet(historical_values=True), sample_metrics, sample_series_set),
         PlotRequest(
             selector=Selector(devices=["x"]),
             metric="pm2.5",

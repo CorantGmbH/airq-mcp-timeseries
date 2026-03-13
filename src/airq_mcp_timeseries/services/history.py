@@ -40,16 +40,12 @@ async def fetch_history(
     """Load, normalize and validate historical data from a provider."""
 
     metrics = (
-        list(available_metrics)
-        if available_metrics is not None
-        else list(await provider.list_metrics(query.selector))
+        list(available_metrics) if available_metrics is not None else list(await provider.list_metrics(query.selector))
     )
     normalized = normalize_history_query(query, metrics=metrics)
     metric_info = select_metric_info(normalized.metric, metrics)
     if metrics and metric_info is None:
-        raise MetricNotAvailableError(
-            f"metric '{query.metric}' is not available for the selected source"
-        )
+        raise MetricNotAvailableError(f"metric '{query.metric}' is not available for the selected source")
 
     capabilities = await provider.get_capabilities()
     _ensure_history_capability(capabilities, normalized)
@@ -98,9 +94,7 @@ async def plot_history(
         series_set,
         target_points=normalized_request.max_points_per_series,
     )
-    processed = downsample(
-        processed, max_points_per_series=normalized_request.max_points_per_series
-    )
+    processed = downsample(processed, max_points_per_series=normalized_request.max_points_per_series)
     summary = summarize(processed)
     model = build_plot_model(processed, normalized_request, metric_info=metric_info)
     result = await render_plotly(model, normalized_request)
@@ -110,9 +104,7 @@ async def plot_history(
 def _requested_interval_for_plot(request: PlotRequest) -> int | None:
     if request.aggregation == "raw":
         return None
-    return auto_interval_seconds(
-        request.start, request.end, target_points=request.max_points_per_series
-    )
+    return auto_interval_seconds(request.start, request.end, target_points=request.max_points_per_series)
 
 
 def _resample_if_requested(
@@ -137,16 +129,12 @@ def _resample_if_requested(
     )
 
 
-def _ensure_history_capability(
-    capabilities: CapabilitySet, query: HistoryQuery
-) -> None:
+def _ensure_history_capability(capabilities: CapabilitySet, query: HistoryQuery) -> None:
     if not capabilities.historical_values:
         raise CapabilityNotAvailableError("provider does not support historical values")
     if capabilities.max_lookback_days is None:
         return
-    latest_allowed_start = utc_now().astimezone(query.start.tzinfo) - timedelta(
-        days=capabilities.max_lookback_days
-    )
+    latest_allowed_start = utc_now().astimezone(query.start.tzinfo) - timedelta(days=capabilities.max_lookback_days)
     if query.start < latest_allowed_start:
         raise CapabilityNotAvailableError(
             f"provider only supports lookback windows up to {capabilities.max_lookback_days} days"

@@ -23,9 +23,7 @@ def downsample(series_set: SeriesSet, max_points_per_series: int) -> SeriesSet:
     return replace(series_set, series=reduced)
 
 
-def _downsample_points(
-    points: list[SeriesPoint], max_points_per_series: int
-) -> list[SeriesPoint]:
+def _downsample_points(points: list[SeriesPoint], max_points_per_series: int) -> list[SeriesPoint]:
     """Reduce one list of points while keeping spikes visible."""
 
     point_count = len(points)
@@ -46,10 +44,7 @@ def _downsample_points(
         keep_middle = max(max_points_per_series - 2, 0)
         if keep_middle > 0:
             stride = len(middle) / keep_middle
-            sampled_middle = [
-                middle[min(int(index * stride), len(middle) - 1)]
-                for index in range(keep_middle)
-            ]
+            sampled_middle = [middle[min(int(index * stride), len(middle) - 1)] for index in range(keep_middle)]
         else:  # pragma: no cover
             sampled_middle = []
         ordered = [ordered[0], *sampled_middle, ordered[-1]]
@@ -61,9 +56,7 @@ def _downsample_points(
     return [points[index] for index in unique_ordered]
 
 
-def _bucket_indices(
-    points: list[SeriesPoint], bucket_start: int, bucket_end: int
-) -> set[int]:
+def _bucket_indices(points: list[SeriesPoint], bucket_start: int, bucket_end: int) -> set[int]:
     """Return representative point indexes for one bucket."""
 
     valid = [

@@ -59,9 +59,7 @@ async def test_render_plotly_returns_static_image(monkeypatch) -> None:
         output_format="png",
     )
 
-    monkeypatch.setattr(
-        go.Figure, "to_image", lambda self, format, width, height, scale: b"png-bytes"
-    )
+    monkeypatch.setattr(go.Figure, "to_image", lambda self, format, width, height, scale: b"png-bytes")
 
     result = await render_plotly(model, request)
 

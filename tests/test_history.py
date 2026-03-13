@@ -12,9 +12,7 @@ from airq_mcp_timeseries.models import (
 from airq_mcp_timeseries.services.history import fetch_history, plot_history
 
 
-async def test_fetch_history_rejects_missing_history_capability(
-    sample_metrics, sample_series_set
-) -> None:
+async def test_fetch_history_rejects_missing_history_capability(sample_metrics, sample_series_set) -> None:
     class LocalProvider:
         async def get_capabilities(self) -> CapabilitySet:
             return CapabilitySet(latest_values=True, historical_values=False)

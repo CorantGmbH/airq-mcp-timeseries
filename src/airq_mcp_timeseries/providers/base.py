@@ -18,9 +18,7 @@ class TimeSeriesProvider(Protocol):
         """Return provider capabilities."""
         raise NotImplementedError  # pragma: no cover
 
-    async def list_metrics(
-        self, selector: Selector | None = None
-    ) -> Sequence[MetricInfo]:
+    async def list_metrics(self, selector: Selector | None = None) -> Sequence[MetricInfo]:
         """List metrics that can be queried for the given selector."""
         raise NotImplementedError  # pragma: no cover
 

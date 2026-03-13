@@ -22,9 +22,7 @@ def test_resample_mean_groups_points_into_time_buckets() -> None:
     ]
     series_set = SeriesSet(
         metric="pm2_5",
-        series=[
-            TimeSeries(id="wohnzimmer", label="Wohnzimmer", unit="ug/m3", points=points)
-        ],
+        series=[TimeSeries(id="wohnzimmer", label="Wohnzimmer", unit="ug/m3", points=points)],
         start=points[0].ts,
         end=points[-1].ts,
         source_resolution_s=300,

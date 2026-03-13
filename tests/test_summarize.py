@@ -15,18 +15,12 @@ def test_summarize_calculates_basic_statistics() -> None:
     start = datetime(2026, 3, 1, 0, 0, 0)
     points = [
         SeriesPoint(ts=start.isoformat() + "+00:00", value=1.0),
-        SeriesPoint(
-            ts=(start + timedelta(minutes=5)).isoformat() + "+00:00", value=None
-        ),
-        SeriesPoint(
-            ts=(start + timedelta(minutes=10)).isoformat() + "+00:00", value=3.0
-        ),
+        SeriesPoint(ts=(start + timedelta(minutes=5)).isoformat() + "+00:00", value=None),
+        SeriesPoint(ts=(start + timedelta(minutes=10)).isoformat() + "+00:00", value=3.0),
     ]
     series_set = SeriesSet(
         metric="pm2_5",
-        series=[
-            TimeSeries(id="wohnzimmer", label="Wohnzimmer", unit="ug/m3", points=points)
-        ],
+        series=[TimeSeries(id="wohnzimmer", label="Wohnzimmer", unit="ug/m3", points=points)],
         start=points[0].ts,
         end=points[-1].ts,
     )

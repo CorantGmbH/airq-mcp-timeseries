@@ -30,9 +30,7 @@ _FRIENDLY_INTERVALS = (
 )
 
 
-def auto_interval_seconds(
-    start: datetime, end: datetime, target_points: int = 1200
-) -> int:
+def auto_interval_seconds(start: datetime, end: datetime, target_points: int = 1200) -> int:
     """Choose a human-friendly resampling interval for a time range."""
 
     duration_s = max((end - start).total_seconds(), 1.0)
@@ -56,9 +54,7 @@ def resample(
         return series_set
     start = _parse_iso_datetime(series_set.start)
     end = _parse_iso_datetime(series_set.end)
-    bucket_size = interval_s or auto_interval_seconds(
-        start, end, target_points=target_points
-    )
+    bucket_size = interval_s or auto_interval_seconds(start, end, target_points=target_points)
     resampled = [
         TimeSeries(
             id=series.id,
@@ -75,9 +71,7 @@ def resample(
     )
 
 
-def _resample_points(
-    points: list[SeriesPoint], interval_s: int, aggregation: Aggregation
-) -> list[SeriesPoint]:
+def _resample_points(points: list[SeriesPoint], interval_s: int, aggregation: Aggregation) -> list[SeriesPoint]:
     buckets: dict[int, list[SeriesPoint]] = defaultdict(list)
     timezone = None
     for point in points:
@@ -94,11 +88,7 @@ def _resample_points(
         values = [point.value for point in bucket_points if point.value is not None]
         if aggregation == "raw":
             value = next(
-                (
-                    point.value
-                    for point in reversed(bucket_points)
-                    if point.value is not None
-                ),
+                (point.value for point in reversed(bucket_points) if point.value is not None),
                 None,
             )
         elif values:

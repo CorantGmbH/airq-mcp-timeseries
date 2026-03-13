@@ -1,8 +1,8 @@
 """Normalization helpers for metrics, queries and requests."""
 
+import re
 from dataclasses import replace
 from datetime import UTC, datetime
-import re
 from typing import Sequence
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
@@ -25,9 +25,7 @@ def canonicalize_metric_name(metric: str) -> str:
     return normalized
 
 
-def select_metric_info(
-    metric: str, metrics: Sequence[MetricInfo] | None = None
-) -> MetricInfo | None:
+def select_metric_info(metric: str, metrics: Sequence[MetricInfo] | None = None) -> MetricInfo | None:
     """Resolve one metric name or alias to its metadata record."""
 
     if not metrics:
@@ -39,9 +37,7 @@ def select_metric_info(
     return next((item for item in metrics if item.key == key), None)
 
 
-def normalize_metric_name(
-    metric: str, metrics: Sequence[MetricInfo] | None = None
-) -> str:
+def normalize_metric_name(metric: str, metrics: Sequence[MetricInfo] | None = None) -> str:
     """Resolve a metric to its canonical provider key if possible."""
     info = select_metric_info(metric, metrics)
     if info is not None:
@@ -107,14 +103,10 @@ def humanize_metric_name(metric: str) -> str:
 def default_plot_title(metric: str, metric_info: MetricInfo | None = None) -> str:
     """Build the default plot title from metric metadata or key."""
 
-    return (
-        metric_info.label if metric_info is not None else humanize_metric_name(metric)
-    )
+    return metric_info.label if metric_info is not None else humanize_metric_name(metric)
 
 
-def default_y_axis_title(
-    metric_info: MetricInfo | None, fallback_unit: str | None = None
-) -> str | None:
+def default_y_axis_title(metric_info: MetricInfo | None, fallback_unit: str | None = None) -> str | None:
     """Choose the y-axis title from metric metadata or fallback unit."""
 
     if metric_info is not None and metric_info.unit:
@@ -159,9 +151,7 @@ def _validate_time_range(start: datetime, end: datetime) -> None:
     """Ensure a normalized time range is timezone-aware and ordered."""
 
     if start.tzinfo is None or end.tzinfo is None:
-        raise InvalidTimeRangeError(
-            "start and end must be timezone-aware after normalization"
-        )
+        raise InvalidTimeRangeError("start and end must be timezone-aware after normalization")
     if end <= start:
         raise InvalidTimeRangeError("end must be after start")
 
