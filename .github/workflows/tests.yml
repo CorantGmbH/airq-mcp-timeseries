@@ -1,0 +1,37 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Run pre-commit
+        if: matrix.python-version == '3.11'
+        run: pre-commit run --all-files
+
+      - name: Lint with pylint
+        if: matrix.python-version == '3.11'
+        run: pylint src/airq_mcp_timeseries
+
+      - name: Type-check with pyright
+        if: matrix.python-version == '3.11'
+        run: pyright
+
+      - name: Run tests
+        run: pytest --exitfirst -n auto --cov=airq_mcp_timeseries --cov-report=xml

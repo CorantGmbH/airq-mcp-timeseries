@@ -1,0 +1,64 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "airq-mcp-timeseries"
+version = "0.1.0"
+description = "Shared time-series domain layer and Plotly renderer for air-Q MCP providers"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.11"
+authors = [{ name = "Corant GmbH" }]
+keywords = ["air-q", "airq", "mcp", "timeseries", "plotly"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "plotly>=6.0.0",
+    "kaleido>=0.2.1",
+    "openpyxl>=3.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.0.2",
+    "pytest-asyncio>=0.21",
+    "pytest-xdist>=3.0",
+    "pytest-cov>=6.0",
+    "black>=25.0",
+    "pylint>=4.0",
+    "pyright>=1.1",
+    "pre-commit>=4.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/CorantGmbH/airq-mcp-timeseries"
+Repository = "https://github.com/CorantGmbH/airq-mcp-timeseries"
+Issues = "https://github.com/CorantGmbH/airq-mcp-timeseries/issues"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["src/airq_mcp_timeseries"]
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.pylint.design]
+max-args = 10
+max-positional-arguments = 10
+max-returns = 7
+
+[tool.pylint.messages_control]
+disable = ["cyclic-import"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/airq_mcp_timeseries"]
