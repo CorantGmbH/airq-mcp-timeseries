@@ -79,7 +79,7 @@ pytest --exitfirst -n auto
 ## Release Process
 
 1. Update `version` in `pyproject.toml`.
-2. Commit the change and create a matching Git tag such as `v0.1.1`.
+2. Commit the change and create a matching Git tag such as `v0.1.2`.
 3. Publish a GitHub Release from that tag.
 
 The publish workflow validates that the release tag matches
