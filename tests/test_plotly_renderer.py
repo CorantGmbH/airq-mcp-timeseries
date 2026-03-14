@@ -1,8 +1,7 @@
 from datetime import datetime
 
-import plotly.graph_objects as go
-
 from airq_mcp_timeseries.models import PlotModel, PlotModelSeries, PlotRequest, Selector
+from airq_mcp_timeseries.renderers.matplotlib_renderer import render_matplotlib
 from airq_mcp_timeseries.renderers.plotly_renderer import render_plotly
 
 
@@ -36,7 +35,7 @@ async def test_render_plotly_returns_html() -> None:
     assert "plotly" in result.payload.lower()
 
 
-async def test_render_plotly_returns_static_image(monkeypatch) -> None:
+async def test_render_matplotlib_returns_png() -> None:
     model = PlotModel(
         metric="pm2_5",
         title="Feinstaub PM2.5",
@@ -59,9 +58,8 @@ async def test_render_plotly_returns_static_image(monkeypatch) -> None:
         output_format="png",
     )
 
-    monkeypatch.setattr(go.Figure, "to_image", lambda self, format, width, height, scale: b"png-bytes")
-
-    result = await render_plotly(model, request)
+    result = await render_matplotlib(model, request)
 
     assert result.mime_type == "image/png"
-    assert result.payload == b"png-bytes"
+    assert isinstance(result.payload, bytes)
+    assert result.payload[:4] == b"\x89PNG"

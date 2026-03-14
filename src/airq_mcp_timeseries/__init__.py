@@ -33,7 +33,7 @@ from airq_mcp_timeseries.models import (
     TimeSeries,
 )
 from airq_mcp_timeseries.providers.base import TimeSeriesProvider
-from airq_mcp_timeseries.renderers.plotly_renderer import render_plotly
+from airq_mcp_timeseries.renderers import render, render_matplotlib, render_plotly
 from airq_mcp_timeseries.services.downsample import downsample
 from airq_mcp_timeseries.services.export import export_history, export_series_set
 from airq_mcp_timeseries.services.history import plot_history, summarize_history
@@ -41,7 +41,7 @@ from airq_mcp_timeseries.services.plot_model import build_plot_model
 from airq_mcp_timeseries.services.resample import auto_interval_seconds, resample
 from airq_mcp_timeseries.services.summarize import summarize
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 __all__ = [
     "AIRQ_COLORWAY",
@@ -77,6 +77,8 @@ __all__ = [
     "export_history",
     "export_series_set",
     "plot_history",
+    "render",
+    "render_matplotlib",
     "render_plotly",
     "resample",
     "summarize",

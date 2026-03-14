@@ -6,7 +6,6 @@ from typing import Any
 
 import plotly.graph_objects as go
 
-from airq_mcp_timeseries.errors import UnsupportedOutputFormatError
 from airq_mcp_timeseries.models import (
     PlotModel,
     PlotRequest,
@@ -14,13 +13,6 @@ from airq_mcp_timeseries.models import (
     get_theme_definition,
 )
 from airq_mcp_timeseries.models.style import PlotStyle, ThemeDefinition
-
-_MIME_TYPES = {
-    "html": "text/html",
-    "png": "image/png",
-    "svg": "image/svg+xml",
-    "webp": "image/webp",
-}
 
 _FONT_FAMILY = "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
 
@@ -31,37 +23,18 @@ def _resolve_theme(style: PlotStyle) -> ThemeDefinition:
 
 
 async def render_plotly(model: PlotModel, request: PlotRequest) -> PlotResult:
-    """Render a plot model with Plotly into the requested output format."""
+    """Render a plot model as interactive HTML with Plotly."""
 
     figure = _build_figure(model, request)
-    output_format = request.output_format
-
-    if output_format == "html":
-        raw_html = figure.to_html(
-            full_html=False,
-            include_plotlyjs="cdn",
-            config=_html_config(),
-        )
-        payload = _wrap_html_with_toggle(raw_html, request)
-        return PlotResult(
-            output_format=output_format,
-            mime_type=_MIME_TYPES[output_format],
-            payload=payload,
-        )
-
-    try:
-        payload = figure.to_image(
-            format=output_format,
-            width=request.style.width,
-            height=request.style.height,
-            scale=2,
-        )
-    except Exception as exc:  # pragma: no cover - exercised via monkeypatch in tests
-        raise UnsupportedOutputFormatError(f"could not render Plotly output as {output_format}: {exc}") from exc
-
+    raw_html = figure.to_html(
+        full_html=False,
+        include_plotlyjs="cdn",
+        config=_html_config(),
+    )
+    payload = _wrap_html_with_toggle(raw_html, request)
     return PlotResult(
-        output_format=output_format,
-        mime_type=_MIME_TYPES[output_format],
+        output_format="html",
+        mime_type="text/html",
         payload=payload,
     )
 

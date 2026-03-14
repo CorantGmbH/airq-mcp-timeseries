@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 
-import plotly.graph_objects as go
 import pytest
 
 from airq_mcp_timeseries.errors import (
@@ -11,7 +9,6 @@ from airq_mcp_timeseries.errors import (
     EmptySeriesError,
     InvalidTimeRangeError,
     MetricNotAvailableError,
-    UnsupportedOutputFormatError,
 )
 from airq_mcp_timeseries.models import (
     CapabilitySet,
@@ -192,7 +189,7 @@ def test_resample_and_downsample_cover_remaining_branches() -> None:
     assert len(_downsample_points(dense_points, 5)) == 5
 
 
-def test_renderer_helpers_cover_layout_branches(monkeypatch) -> None:
+def test_renderer_helpers_cover_layout_branches() -> None:
     model = PlotModel(
         metric="co2",
         title="CO2",
@@ -279,15 +276,6 @@ def test_renderer_helpers_cover_layout_branches(monkeypatch) -> None:
     )
     assert plotly_renderer._hover_template(None).endswith("<extra>%{fullData.name}</extra>")
     assert plotly_renderer._hex_to_rgba("#ffffff", 0.5) == "rgba(255, 255, 255, 0.5)"
-
-    monkeypatch.setattr(
-        go.Figure,
-        "to_image",
-        lambda self, **kwargs: (_ for _ in ()).throw(RuntimeError("boom")),
-    )
-    with pytest.raises(UnsupportedOutputFormatError):
-        asyncio_run = __import__("asyncio").run
-        asyncio_run(plotly_renderer.render_plotly(model, replace(request, output_format="png")))
 
 
 @pytest.mark.asyncio
@@ -407,7 +395,7 @@ async def test_history_error_and_branch_coverage(sample_metrics, sample_series_s
 
     monkeypatch.setattr(history_service, "resample", fake_resample)
     monkeypatch.setattr(history_service, "downsample", fake_downsample)
-    monkeypatch.setattr(history_service, "render_plotly", fake_render)
+    monkeypatch.setattr(history_service, "render", fake_render)
 
     result = await history_service.plot_history(
         Provider(CapabilitySet(historical_values=True), sample_metrics, sample_series_set),

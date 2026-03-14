@@ -19,7 +19,7 @@ from airq_mcp_timeseries.models import (
     SummarySet,
 )
 from airq_mcp_timeseries.providers.base import TimeSeriesProvider
-from airq_mcp_timeseries.renderers.plotly_renderer import render_plotly
+from airq_mcp_timeseries.renderers import render
 from airq_mcp_timeseries.services.downsample import downsample
 from airq_mcp_timeseries.services.normalize import (
     normalize_history_query,
@@ -97,7 +97,7 @@ async def plot_history(
     processed = downsample(processed, max_points_per_series=normalized_request.max_points_per_series)
     summary = summarize(processed)
     model = build_plot_model(processed, normalized_request, metric_info=metric_info)
-    result = await render_plotly(model, normalized_request)
+    result = await render(model, normalized_request)
     return replace(result, summary=summary)
 
 
