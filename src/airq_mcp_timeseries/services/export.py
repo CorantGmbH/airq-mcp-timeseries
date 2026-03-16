@@ -18,10 +18,8 @@ _EXPORT_MIME_TYPES = {
 }
 _EXPORT_HEADERS = [
     "timestamp",
-    "series_id",
-    "series_label",
+    "series",
     "metric",
-    "metric_label",
     "unit",
     "value",
 ]
@@ -60,18 +58,15 @@ def export_series_set(
     )
 
 
-def _rows(series_set: SeriesSet, metric_info: MetricInfo | None) -> list[list[str | float | None]]:
-    metric_label = metric_info.label if metric_info is not None else series_set.metric
+def _rows(series_set: SeriesSet, _metric_info: MetricInfo | None) -> list[list[str | float | None]]:
     rows: list[list[str | float | None]] = []
     for series in series_set.series:
         for point in series.points:
             rows.append(
                 [
                     point.ts,
-                    series.id,
                     series.label,
                     series_set.metric,
-                    metric_label,
                     series.unit,
                     point.value,
                 ]

@@ -27,7 +27,7 @@ class PlotRequest:
     aggregation: Aggregation = "raw"
     max_points_per_series: int = 1200
     timezone: str | None = None
-    output_format: OutputFormat = "html"
+    output_format: OutputFormat = "png"
     style: PlotStyle = field(default_factory=PlotStyle)
 
 

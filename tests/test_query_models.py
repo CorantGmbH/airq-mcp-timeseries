@@ -34,6 +34,17 @@ def test_normalize_history_query_resolves_aliases_and_timezone(sample_metrics) -
     assert getattr(normalized.start.tzinfo, "key", None) == "Europe/Berlin"
 
 
+def test_plot_request_defaults_to_png() -> None:
+    request = PlotRequest(
+        selector=Selector(devices=["Wohnzimmer"]),
+        metric="pm2.5",
+        start=datetime(2026, 3, 1, 8, 0, 0),
+        end=datetime(2026, 3, 1, 9, 0, 0),
+    )
+
+    assert request.output_format == "png"
+
+
 def test_normalize_plot_request_rejects_invalid_ranges() -> None:
     request = PlotRequest(
         selector=Selector(devices=["Wohnzimmer"]),

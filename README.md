@@ -56,6 +56,8 @@ request = PlotRequest(
 
 result = await plot_history(provider, request)
 
+# PlotRequest defaults to PNG for token-efficient binary artifact responses.
+
 export = await export_history(
     provider,
     HistoryQuery(
