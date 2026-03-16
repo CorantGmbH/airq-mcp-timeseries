@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "airq-mcp-timeseries"
-version = "0.1.3"
+version = "0.1.4"
 description = "Shared time-series domain layer and Plotly renderer for air-Q MCP providers"
 readme = "README.md"
 license = "Apache-2.0"
