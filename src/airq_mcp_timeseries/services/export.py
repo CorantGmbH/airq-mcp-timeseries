@@ -18,8 +18,10 @@ _EXPORT_MIME_TYPES = {
 }
 _EXPORT_HEADERS = [
     "timestamp",
-    "series",
+    "series_id",
+    "series_label",
     "metric",
+    "metric_label",
     "unit",
     "value",
 ]
@@ -66,7 +68,9 @@ def _rows(series_set: SeriesSet, metric_info: MetricInfo | None) -> list[list[st
             rows.append(
                 [
                     point.ts,
+                    series.id,
                     series.label,
+                    series_set.metric,
                     metric_label,
                     series.unit,
                     point.value,

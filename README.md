@@ -20,7 +20,7 @@ that `mcp-airq` and `mcp-airq-cloud` can reuse the same business logic.
 - metric normalization and query validation
 - resampling and peak-preserving downsampling
 - renderer-independent plot model
-- Plotly rendering for HTML, PNG, SVG and WebP
+- Plotly rendering for HTML plus matplotlib-based PNG, SVG and WebP exports
 - CSV and Excel export for processed time-series data
 - async high-level orchestration with `plot_history()`, `summarize_history()` and `export_history()`
 
@@ -29,6 +29,9 @@ that `mcp-airq` and `mcp-airq-cloud` can reuse the same business logic.
 ```bash
 pip install airq-mcp-timeseries
 ```
+
+This package now includes `Pillow` as a runtime dependency so WebP rendering
+works out of the box.
 
 For development:
 

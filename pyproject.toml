@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "airq-mcp-timeseries"
-version = "0.1.4"
+version = "0.1.5"
 description = "Shared time-series domain layer and Plotly renderer for air-Q MCP providers"
 readme = "README.md"
 license = "Apache-2.0"
@@ -23,6 +23,7 @@ dependencies = [
     "plotly>=6.0.0",
     "matplotlib>=3.9.0",
     "openpyxl>=3.1.0",
+    "Pillow>=10.0.0",
 ]
 
 [project.optional-dependencies]

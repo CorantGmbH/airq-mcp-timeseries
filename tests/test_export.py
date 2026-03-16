@@ -23,8 +23,8 @@ def test_export_series_set_writes_csv(sample_metrics, sample_series_set) -> None
     )
     assert isinstance(result.payload, str)
     lines = result.payload.strip().splitlines()
-    assert lines[0] == "timestamp,series,metric,unit,value"
-    assert "Wohnzimmer,Feinstaub PM2.5,ug/m3,0.0" in lines[1]
+    assert lines[0] == "timestamp,series_id,series_label,metric,metric_label,unit,value"
+    assert "wohnzimmer,Wohnzimmer,pm2_5,Feinstaub PM2.5,ug/m3,0.0" in lines[1]
 
 
 def test_export_series_set_writes_xlsx(sample_metrics, sample_series_set) -> None:
@@ -41,13 +41,17 @@ def test_export_series_set_writes_xlsx(sample_metrics, sample_series_set) -> Non
 
     assert rows[0] == (
         "timestamp",
-        "series",
+        "series_id",
+        "series_label",
         "metric",
+        "metric_label",
         "unit",
         "value",
     )
     assert rows[1][1:] == (
+        "wohnzimmer",
         "Wohnzimmer",
+        "pm2_5",
         "Feinstaub PM2.5",
         "ug/m3",
         0,
