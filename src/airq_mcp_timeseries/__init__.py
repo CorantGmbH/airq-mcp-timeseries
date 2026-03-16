@@ -41,7 +41,7 @@ from airq_mcp_timeseries.services.plot_model import build_plot_model
 from airq_mcp_timeseries.services.resample import auto_interval_seconds, resample
 from airq_mcp_timeseries.services.summarize import summarize
 
-__version__ = "0.1.3"
+__version__ = "0.1.7"
 
 __all__ = [
     "AIRQ_COLORWAY",

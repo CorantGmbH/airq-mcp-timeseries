@@ -58,16 +58,17 @@ def export_series_set(
     )
 
 
-def _rows(series_set: SeriesSet, _metric_info: MetricInfo | None) -> list[list[str | float | None]]:
+def _rows(series_set: SeriesSet, metric_info: MetricInfo | None) -> list[list[str | float | None]]:
     rows: list[list[str | float | None]] = []
     for series in series_set.series:
+        unit = series.unit or (metric_info.unit if metric_info is not None else None)
         for point in series.points:
             rows.append(
                 [
                     point.ts,
                     series.label,
                     series_set.metric,
-                    series.unit,
+                    unit,
                     point.value,
                 ]
             )

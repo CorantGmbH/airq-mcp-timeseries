@@ -48,7 +48,7 @@ from datetime import datetime, timedelta
 from airq_mcp_timeseries import HistoryQuery, PlotRequest, Selector, export_history, plot_history
 
 request = PlotRequest(
-    selector=Selector(devices=["Living Room"]),
+    selector=Selector(devices=["Living Room", "Office"]),
     metric="co2",
     start=datetime.now().astimezone() - timedelta(hours=6),
     end=datetime.now().astimezone(),
@@ -69,6 +69,10 @@ export = await export_history(
     output_format="csv",
 )
 ```
+
+One `PlotRequest` renders one metric across all selected devices into a single
+plot artifact. One `export_history()` call likewise produces a single CSV/XLSX
+file containing rows for all selected devices.
 
 `provider` must implement the shared `TimeSeriesProvider` protocol.
 
